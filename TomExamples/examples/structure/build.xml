@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Build the structure example" default="build" basedir="..">
+  <import file="../common.xml"/>
+  <property name="example" value="structure"/>
+  <target name="build" depends="init">
+    <!-- build adt -->
+    <gombuild/>
+    <gomantlradapter.preset
+      srcdir="${examples.dir}"
+      destdir="${examples.gen}"
+      package="${example}">
+      <include name="${example}/**/Structures.gom"/>
+    </gomantlradapter.preset>
+    <!-- build tom -->
+    <tom.preset srcdir="${examples.dir}"
+                destdir="${examples.gen}">
+      <!-- stamp not yet ready for apigen list -->
+      <include name="${example}/**/*.t"/>
+      <exclude name="${example}/**/Structures.g.t"/>
+    </tom.preset>
+    <!-- build parser -->
+    <mkdir dir="${examples.gen}/${example}"/>
+    <taskdef name="antlr3"
+             classname="org.apache.tools.ant.antlr.ANTLR3">
+      <classpath refid="tom.classpath"/>
+    </taskdef>
+    <antlr3 target="${examples.dir}/${example}/Structures.g"
+            outputdirectory="${examples.gen}/${example}"
+            libdirectory="${examples.gen}/${example}/structures"
+            multithreaded="true">
+      <classpath refid="tom.classpath"/>
+    </antlr3>
+    <!-- build java source -->
+    <javacompile/>
+    <!-- copy resources -->
+    <copy todir="${examples.build}/${example}">
+      <fileset dir="${examples.dir}/${example}">
+        <include name="examples"/>
+      </fileset>
+    </copy>
+    <!-- Create a jar for the applet -->
+    <jar jarfile="${examples.build}/${example}/example.jar">
+      <fileset dir="${examples.build}">
+        <include name="${example}/**/*.class"/>
+        <include name="${example}/**/*.gif"/>
+      </fileset>
+      <zipfileset src="${tom.home}/lib/tom-runtime-full.jar"/>
+    </jar>
+  </target>
+  <property name="distribute" value="yes"/>
+  <target name="dist" depends="common.dist" if="distrib.zip">
+    <zip destfile="${distrib.zip}" update="yes">
+      <zipfileset dir="${examples.dir}" prefix="examples" filemode="644">
+        <include name="${example}/examples*"/>
+      </zipfileset>
+    </zip>
+  </target>
+</project>

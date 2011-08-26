@@ -1,0 +1,44 @@
+module propp.Seq
+imports String int
+abstract syntax
+
+RuleR = Negd()
+      | Disjd()
+      | Impd()
+      | Negg()
+      | Conjg()
+      | Disjg()
+      | Conjd()
+      | Impg()
+      | Axiom()
+      | Rulename(name:String)
+
+Pred  = EmptyP()
+      | A()
+      | B()
+      | C()
+      | D()
+      | P()
+      | Q()
+      | E()
+      | Pred(name:String)
+      | Equiv(left:Pred,right:Pred)
+      | Impl(left:Pred,right:Pred)
+      | Vee(left:Pred,right:Pred)
+      | Wedge(left:Pred,right:Pred)
+      | Neg(p:Pred)
+      | Mark(p:Pred)
+
+Trace = Rappl(Rule:RuleR,subject:Sequent,prod:ListSequent)
+Proof = Hyp(Seq:Sequent)
+      | Rule(Rule:RuleR,goal:Sequent,lemm:ListProof)
+ListProof = ConcProof(Proof*)
+
+Sequent = PROOF()
+        | END()
+        | Seq(left:ListPred,right:ListPred)
+ListPred = ConcPred(Pred*)
+ListSequent = ConcSequent(Sequent*)
+
+Pair = Pair(left:int,right:String)
+ListPair = ConcPair(Pair*)

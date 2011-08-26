@@ -1,0 +1,80 @@
+module structure.Structures
+imports String
+abstract syntax
+
+Struc = O() | Atom(s:String)
+      | Neg(a:Struc)
+      | Cop(copl:StrucCop)
+      | Par(parl:StrucPar)
+      | Seq(seql:StrucSeq)
+Cop:make(l) {
+  %match(StrucCop l) {
+    ConcCop() -> { return `O(); }
+    ConcCop(x)-> { return `x; }
+  }
+}
+Par:make(l) {
+  %match(StrucPar l) {
+    ConcPar() -> { return `O(); }
+    ConcPar(x)-> { return `x; }
+  }
+}
+Seq:make(l) {
+  %match(StrucSeq l) {
+    ConcSeq()  -> { return `O(); }
+    ConcSeq(x) -> { return `x; }
+  }
+}
+
+StrucPar = ConcPar( Struc* )
+StrucCop = ConcCop( Struc* )
+StrucSeq = ConcSeq( Struc* )
+ConcSeq:make_insert(e,l) {
+  %match(Struc e) {
+    O()                 -> { return l; }
+    Seq(ConcSeq(subL*)) -> { return `ConcSeq(subL*,l*); }
+  }
+}
+
+ConcCop:make_insert(e,l) {
+  %match(Struc e) {
+    O() -> { return l; }
+    Cop(ConcCop(L*)) -> { return `ConcCop(L*,l*); }
+  }
+
+  if(!l.isEmptyConcCop()) {
+    if (0 < e.compareToLPO(l.getHeadConcCop())) {
+      structure.structures.types.StrucCop newTail = l.getTailConcCop();
+      newTail = `ConcCop(e,newTail*);
+      return realMake(l.getHeadConcCop(), newTail);
+    } else {
+      return realMake(e,l);
+    }
+  }
+}
+
+ConcPar:make_insert(e,l) {
+  %match(Struc e) {
+    O() -> { return l; }
+    Par(ConcPar(L*)) -> { return `ConcPar(L*,l*); }
+  }
+  if(!l.isEmptyConcPar()) {
+    if(0 < e.compareToLPO(l.getHeadConcPar())) {
+      structure.structures.types.StrucPar newTail = l.getTailConcPar();
+      return realMake(l.getHeadConcPar(), `ConcPar(e,newTail*));
+    } else {
+      return realMake(e,l);
+      }
+  }
+}
+Neg:make(a) {
+  %match(Struc a) {
+    Neg(s) -> { return `s; }
+    Par(ConcPar(h,t*)) -> {
+      return `Cop(ConcCop(Neg(h),Neg(Par(t*))));
+    }
+    Cop(ConcCop(h,t*)) -> {
+      return `Par(ConcPar(Neg(h),Neg(Cop(t*))));
+    }
+  }
+}

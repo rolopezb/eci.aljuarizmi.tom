@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="runExamplesTom" basedir=".">
+  <import file="./common.xml"/>
+	
+  <!-- El siguiente classpath es experimental (no funciona)-->	
+  <target name="run.init" depends="init">
+    <path id="run.classpath">
+  	  <pathelement location="${examples.build}"/>
+  	  <path refid="tom.examples.classpath"/>
+    </path>
+  </target>
+	
+    <path id="run.classpath">
+  	  <pathelement location="${tom.common.path}/tom-runtime-full.jar"/>
+  	  <pathelement location="${examples.build}"/>
+    </path>
+  
+  <!-- Por ahora funciona OK-->	
+  <target name="runAddressBook">
+  	<java classname="addressbook.AddressBook1" fork="yes">
+  		<classpath refid="run.classpath"/>
+  	</java>
+  </target>
+</project>

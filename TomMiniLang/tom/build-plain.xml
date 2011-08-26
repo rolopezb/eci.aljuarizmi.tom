@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="Example Ant for TOM" basedir="." default="compile">
+  <description>
+    A simple example of build script using Ant offering compilation of TOM programs.
+  </description>
+ 
+  <!-- Initializing Tom and Gom -->
+  <property environment="env"/>
+  <property name="tom.home" value="${env.TOM_HOME}"/>
+  <import file="${tom.home}/lib/tom-common.xml"/>
+ 
+  <!-- Defining folders -->
+  <property name="my_example" value="tom_example"/>
+  <property name="src.dir" value="."/>
+  <property name="gen.dir" value="gen"/>
+  <property name="build.dir" value="build"/>
+  <property name="mapping.dir" value="${gen.dir}/${my_example}/${my_example}"/>
+ 
+  <!-- Declaring Tom task -->
+  <taskdef name="tom" classname="tom.engine.tools.ant.TomTask">
+    <classpath refid="tom.classpath"/>
+  </taskdef>
+ 
+  <!-- Declaring Gom task -->
+  <taskdef name="gom"
+           classname="tom.gom.tools.ant.GomTask"
+           classpathref="tom.classpath"/>
+ 
+  <target name="init" depends="tom.init" description="To realize initialization">
+    <mkdir dir="${gen.dir}"/>
+    <mkdir dir="${build.dir}"/>
+  </target>
+ 
+  <target name="compile" depends="init" description="To compile all programs">
+    <!-- Compiling Gom programs -->
+    <gom config="${gomconfigfile}"
+         srcdir="${src.dir}"
+         package="${my_example}"
+         destdir="${gen.dir}">
+      <include name="**/*.gom"/>
+    </gom>
+ 
+    <!-- Compiling Tom programs -->
+    <tom config="${tomconfigfile}"
+         srcdir="${src.dir}"
+         destdir="${gen.dir}"
+         options="-I ${mapping.dir}">
+      <include name="**/*.t"/>
+    </tom>
+ 
+    <!-- Compiling Java programs -->
+    <javac srcdir="${gen.dir}" destdir="${build.dir}">
+      <classpath path="${build.dir}"/>
+      <include name="**/*.java"/>
+    </javac>
+  </target>
+ 
+  <target name="clean" description="To remove generated code">
+    <delete dir="${gen.dir}"/>
+    <delete dir="${build.dir}"/>
+  </target>
+</project>

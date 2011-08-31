@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="precedences-antlr"  basedir=".">
+	<!--
+   Ejemplo de compilacion, usando generación de fuentes via Antlr.
+-->
+	<property environment="env" />
+	<property name="tom.home" value="${env.TOM_HOME}" />
+	<import file="${tom.home}/lib/tom-common.xml" />
+
+	<property name="src" location="src" />
+	<property name="antlr.src" location="antlr-src" />
+	<property name="gen" location="src" />
+	<property name="build" location="build" />
+	<property name="bin" location="bin" />
+	<property name="package" value="prec" />
+	<property name="refresh.root" value="antlr.precedences.parser/src"/>
+
+	<path id="test.classpath">
+		<pathelement location="${bin}" />
+		<path refid="tom.classpath" />
+	</path>
+
+	
+	
+	<path id="run.classpath">
+		<pathelement location="${build}" />
+		<path refid="tom.classpath" />
+	</path>
+
+
+	<target name="refresh">
+		<eclipse.refreshLocal resource="${refresh.root}" depth="infinite"/>
+		<echo message="${refresh.root} Ambiente refrescado"></echo>
+	</target>
+
+	<target name="clean" description="Cleans gen and build directory">
+		<delete dir="${gen}" />
+		<delete dir="${build}" />
+		<antcall target="refresh"/>
+	</target>
+
+	<target name="local.init" depends="tom.init">
+		<mkdir dir="${gen}" />
+		<mkdir dir="${gen}/${package}"/> <!-- No se si haya conflicto al usar gom-->
+	</target>
+
+	<target name="antlr3" depends="local.init">
+		<description>Genera los fuentes java a partir de antlr</description>
+		<taskdef name="antlr3" classname="org.apache.tools.ant.antlr.ANTLR3">
+			<classpath refid="tom.classpath" />
+		</taskdef>
+
+		<!-- Por ahora se omite el atributo libdirectory que indica en donde hay archivos de tokens.
+		  	     Ver build-minilang-antlr-->
+		<antlr3 target="${antlr.src}/Precedences.g" 
+			outputdirectory="${gen}/${package}" 
+			multithreaded="true">
+			<classpath refid="tom.classpath" />
+		</antlr3>
+		<antcall target="refresh"/>
+	</target>
+
+
+	<target name="run.lexer" depends="tom.init">  <!-- para evitar un warning acerca de tom.classpath-->
+		<java classname="test.LexerTest" fork='yes' failonerror="true">
+			<classpath refid="test.classpath" />
+			<arg value="data/exp1.prec" />
+		</java>
+
+	</target>
+
+	<target name="run.parser" depends="tom.init">  <!-- para evitar un warning acerca de tom.classpath-->
+		<java classname="test.ManualParserTest" fork='yes' failonerror="true">
+			<classpath refid="test.classpath" />
+			<arg value="data/exp1.prec" />
+		</java>
+
+	</target>
+
+</project>

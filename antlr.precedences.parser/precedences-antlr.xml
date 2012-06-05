@@ -2,21 +2,38 @@
 <project name="precedences-antlr"  basedir=".">
 	<!--
    Ejemplo de compilacion, usando generación de fuentes via Antlr.
--->
+    -->
 	<property environment="env" />
+	<!-- property file="${user.home}/.user.build.properties"/ -->
+
 	<property name="tom.home" value="${env.TOM_HOME}" />
 	<import file="${tom.home}/lib/tom-common.xml" />
-
+	
+	<import file="${user.home}/Programas/AntImports/miscLibs.xml"/>
+	
 	<property name="src" location="src" />
 	<property name="antlr.src" location="antlr-src" />
 	<property name="gen" location="src" />
 	<property name="build" location="build" />
 	<property name="bin" location="bin" />
+	<property name="log.dir" location="log"/>
+	<property name="conf.dir" location="conf"/>
+	<property name="data.dir" location="data"/>
+	
+	<!-- exp1.prec exp2.prec expmenos.prec-->
+	<property name="expr.file" value="${data.dir}/expmenos.prec"/>
+
+	<path id="antlr.classpath">
+		<pathelement location="${user.home}/Programas/Antlr/antlr-3.4-complete.jar"/>
+	</path>
+
 	<property name="package" value="prec" />
 	<property name="refresh.root" value="antlr.precedences.parser/src"/>
 
 	<path id="test.classpath">
 		<pathelement location="${bin}" />
+		<pathelement location="${LOG4J}" />
+		<pathelement location="${conf.dir}" />
 		<path refid="tom.classpath" />
 	</path>
 
@@ -41,7 +58,12 @@
 
 	<target name="local.init" depends="tom.init">
 		<mkdir dir="${gen}" />
+		<mkdir dir="${log.dir}" />
 		<mkdir dir="${gen}/${package}"/> <!-- No se si haya conflicto al usar gom-->
+		<mkdir dir="${gen}/book"/> <!-- Para los ensayos con el libro-->
+		<mkdir dir="${gen}/parr"/> <!-- Para los ensayos con el articulo de Parr-->
+		<mkdir dir="${gen}/alju"/> <!-- Para los ensayos -->
+		<mkdir dir="${gen}/other"/> <!-- -->
 	</target>
 
 	<target name="antlr3" depends="local.init">
@@ -52,13 +74,63 @@
 
 		<!-- Por ahora se omite el atributo libdirectory que indica en donde hay archivos de tokens.
 		  	     Ver build-minilang-antlr-->
-		<antlr3 target="${antlr.src}/Precedences.g" 
+		<antlr3 target="${antlr.src}/${grammar}" 
 			outputdirectory="${gen}/${package}" 
 			multithreaded="true">
 			<classpath refid="tom.classpath" />
 		</antlr3>
 		<antcall target="refresh"/>
 	</target>
+	
+	<target name="antlrPrecedences">
+		<antcall target="antlr3">
+			<param name="package" value="${package}"/>
+			<param name="grammar" value="Precedences.g"/>
+		</antcall>
+	</target>
+
+	<target name="antlrBook">
+		<antcall target="antlr3">
+			<param name="package" value="book"/>
+			<param name="grammar" value="Expr.g"/>
+		</antcall>
+	</target>
+
+	<target name="antlrParr">
+		<antcall target="antlr3">
+			<param name="package" value="parr"/>
+			<param name="grammar" value="ParrPrecedence.g"/>
+		</antcall>
+	</target>
+
+	<target name="antlrOther">
+		<antcall target="antlr3">
+			<param name="package" value="other"/>
+			<param name="grammar" value="OtherPrecedence.g"/>
+		</antcall>
+	</target>
+
+	<target name="antlrAljuarizmi">
+		<antcall target="antlr3">
+			<param name="package" value="alju"/>
+			<param name="grammar" value="AlJuarizmi.g"/>
+		</antcall>
+	</target>
+
+	<target name="antlrAljuTest">
+		<antcall target="antlr3">
+			<param name="package" value="test"/>
+			<param name="grammar" value="AljuTest.g"/>
+		</antcall>
+	</target>
+
+	<target name="antlrOtherPrecedences">
+		<java classname="org.antlr.Tool">
+			<classpath refid="antlr.classpath"/>
+			<arg line="-o ${gen}/other ${antlr.src}/OtherPrecedence.g"/>
+		</java>
+	</target>
+
 
 
 	<target name="run.lexer" depends="tom.init">  <!-- para evitar un warning acerca de tom.classpath-->
@@ -69,12 +141,50 @@
 
 	</target>
 
-	<target name="run.parser" depends="tom.init">  <!-- para evitar un warning acerca de tom.classpath-->
-		<java classname="test.ManualParserTest" fork='yes' failonerror="true">
+	<target name="run.Norwell" depends="tom.init">  <!-- para evitar un warning acerca de tom.classpath-->
+		<java classname="test.NorwellParserTest" fork='yes' failonerror="true">
 			<classpath refid="test.classpath" />
-			<arg value="data/exp1.prec" />
+			<sysproperty key="log.dir" path="${log.dir}"/>
+			<arg value="${expr.file}" />
 		</java>
 
+	</target>
+	
+	<target name="run.Crockford" depends="tom.init">  <!-- para evitar un warning acerca de tom.classpath-->
+		<java classname="test.CrockTest" fork='yes' failonerror="true">
+			<classpath refid="test.classpath" />
+			<sysproperty key="log.dir" path="${log.dir}"/>
+			<arg value="${data.dir}/test.crock" />
+		</java>
+		<eclipse.refreshLocal resource="antlr.precedences.parser/log" depth="infinite"/>
+	</target>
+	
+	
+	<target name="run.LA_Test" depends="local.init">  <!-- para evitar un warning acerca de tom.classpath-->
+		<java classname="test.LA_Test" fork='yes' failonerror="true">
+			<classpath refid="test.classpath" />
+			<sysproperty key="log.dir" path="${log.dir}"/>
+			<arg value="${data.dir}/parr.prec" />
+		</java>
+		<eclipse.refreshLocal resource="antlr.precedences.parser/log" depth="infinite"/>
+	</target>
+
+	<target name="run.ParrTest" depends="local.init">  <!-- para evitar un warning acerca de tom.classpath-->
+		<java classname="test.ParrTest" fork='yes' failonerror="true">
+			<classpath refid="test.classpath" />
+			<sysproperty key="log.dir" path="${log.dir}"/>
+			<arg value="${data.dir}/parr.prec" />
+		</java>
+		<eclipse.refreshLocal resource="antlr.precedences.parser/log" depth="infinite"/>
+	</target>
+
+	<target name="run.AljuTest" depends="local.init">  <!-- para evitar un warning acerca de tom.classpath-->
+		<java classname="test.AljuParserTest" fork='yes' failonerror="true">
+			<classpath refid="test.classpath" />
+			<sysproperty key="log.dir" path="${log.dir}"/>
+			<arg value="${data.dir}/test.alju" />
+		</java>
+		<eclipse.refreshLocal resource="antlr.precedences.parser/log" depth="infinite"/>
 	</target>
 
 </project>

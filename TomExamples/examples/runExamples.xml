@@ -16,9 +16,22 @@
     </path>
   
   <!-- Por ahora funciona OK-->	
-  <target name="runAddressBook">
-  	<java classname="addressbook.AddressBook1" fork="yes">
-  		<classpath refid="run.classpath"/>
-  	</java>
-  </target>
+	  <target name="runAddressBook">
+	  	<java classname="addressbook.AddressBook1" fork="yes">
+	  		<classpath refid="run.classpath"/>
+	  	</java>
+	  </target>
+	
+	  <target name="runGraphMain">
+	  	<java classname="parser.GraphMain" fork="yes">
+	  		<classpath refid="run.classpath"/>
+	  	</java>
+	  </target>
+	
+	  <target name="runParserMain">
+	  	<java classname="parser.Main" fork="yes">
+	  		<classpath refid="run.classpath"/>
+	  	</java>
+	  </target>
+	
 </project>

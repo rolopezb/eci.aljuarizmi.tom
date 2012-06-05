@@ -1,6 +1,6 @@
-package lang.test;
+package nix.test;
 
-import lang.NixLexer;
+import nix.NixLexer;
 
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.ANTLRInputStream;

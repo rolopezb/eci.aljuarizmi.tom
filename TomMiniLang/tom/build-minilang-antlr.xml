@@ -1,93 +1,82 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="Tom Mini Lang" default="build" basedir=".">
-  <!--
+	<!--
    Ejemplo de compilacion, usando generación de fuentes via Antlr. Es una modificación
    del ejemplo de la doc oficial, separando cada paso en una tarea separada.
 -->
-  <property environment="env"/>
-  <property name="tom.home"        value="${env.TOM_HOME}"/>
-  <import file="${tom.home}/lib/tom-common.xml"/>
-  
+	<property environment="env" />
+	<property name="tom.home" value="${env.TOM_HOME}" />
+	<import file="${tom.home}/lib/tom-common.xml" />
 
-  <property name="src" location="src"/>
-  <property name="gen" location="gen"/>
-  <property name="build" location="build"/>
-  <property name="parser" value="parser"/>
-  	
-  <path id="run.classpath">
-  	<pathelement location="${build}" />
-    <path refid="tom.classpath" />
-  </path>
 
-	
-  <target name="clean" description="Cleans gen and build directory">
-    <delete dir="${gen}"/>
-    <delete dir="${build}"/>
-  </target>
- 
-	  <target name="local.init" depends="tom.init">
-	  	<mkdir dir="${gen}"/>
-	  </target>
-		
-	  <target name="gom" depends="local.init">
-	    <gom.preset srcdir="${src}"
-	      destdir="${gen}">
-	      <include name="${parser}/Rec.gom"/>
-	    </gom.preset>
-	  </target>
-		
-	  <target name="gomantlradapter" depends="local.init">
-	    <gomantlradapter.preset
-	      srcdir="${src}"
-	      destdir="${gen}"
-	      package="${parser}">
-	      <include name="${parser}/**/Rec.gom"/>
-	    </gomantlradapter.preset>
-	  </target>
-		
-	  <target name="antlr3" depends="local.init">
-	  	<description>Genera los fuentes java a partir de antlr</description>
-	    <taskdef name="antlr3"
-	      classname="org.apache.tools.ant.antlr.ANTLR3">
-	      <classpath refid="tom.classpath"/>
-	    </taskdef>
+	<property name="src" location="src" />
+	<property name="gen" location="gen" />
+	<property name="build" location="bin" />
+	<property name="parser" value="parser" /> <!-- Podria cambiarse por package=parser?-->
 
-	  	<!-- libdirectory: indica en donde hay archivos de tokens, por ej. -->
-	    <antlr3 target="${src}/${parser}/Rec.g"
-	      outputdirectory="${gen}/${parser}"
-	      libdirectory="${gen}/${parser}/rec"   
-	      multithreaded="true">
-	      <classpath refid="tom.classpath"/>
-	    </antlr3>
-	  </target>
-		
-	  <target name="tom" depends="gom,gomantlradapter">
-	    <tom.preset srcdir="${src}"  		        
-	      destdir="${gen}">          
-	    </tom.preset>
-	  </target>
-		
-	  <target name="java.compile" depends="local.init">
-	    <mkdir dir="${build}"/>
-	    <javac.preset
-	      includeantruntime="false"
-	      destdir="${build}">
-	      <src path="${src}"/>
-	      <src path="${gen}"/>
-	      <classpath refid="tom.classpath"/>
-	    </javac.preset>
-	  </target>
-		
-	  <target name="build" 
-	      depends="gom,gomantlradapter,antlr3,tom,java.compile"/>
-	
-	  <target name="run" depends="build">
-	    <java classname="parser.Main" fork='yes' failonerror="true">
-		     <classpath refid="run.classpath"/>
-		     <arg value="test3.txt"/>
+	<path id="run.classpath">
+		<pathelement location="${build}" />
+		<path refid="tom.classpath" />
+	</path>
+
+
+	<target name="clean" description="Cleans gen and build directory">
+		<delete dir="${gen}" />
+		<delete dir="${build}" />
+	</target>
+
+	<target name="local.init" depends="tom.init">
+		<mkdir dir="${gen}" />
+		<mkdir dir="${build}"/>
+	</target>
+
+	<target name="gom" depends="local.init">
+		<gom.preset srcdir="${src}" destdir="${gen}">
+			<include name="${parser}/Rec.gom" />
+		</gom.preset>
+	</target>
+
+	<target name="gomantlradapter" depends="local.init">
+		<gomantlradapter.preset srcdir="${src}" destdir="${gen}" package="${parser}">
+			<include name="${parser}/**/Rec.gom" />
+		</gomantlradapter.preset>
+	</target>
+
+	<target name="antlr3" depends="local.init">
+		<description>Genera los fuentes java a partir de antlr</description>
+		<taskdef name="antlr3" classname="org.apache.tools.ant.antlr.ANTLR3">
+			<classpath refid="tom.classpath" />
+		</taskdef>
+
+		<!-- libdirectory: indica en donde hay archivos de tokens, por ej. -->
+		<antlr3 target="${src}/${parser}/Rec.g" outputdirectory="${gen}/${parser}" libdirectory="${gen}/${parser}/rec" multithreaded="true">
+			<classpath refid="tom.classpath" />
+		</antlr3>
+	</target>
+
+	<target name="tom" depends="gom,gomantlradapter">
+		<tom.preset srcdir="${src}" destdir="${gen}">
+		</tom.preset>
+	</target>
+
+	<target name="java.compile" depends="local.init">
+		<mkdir dir="${build}" />
+		<javac.preset includeantruntime="false" destdir="${build}">
+			<src path="${src}" />
+			<src path="${gen}" />
+			<classpath refid="tom.classpath" />
+		</javac.preset>
+	</target>
+
+	<target name="build" depends="gom,gomantlradapter,antlr3,tom,java.compile" />
+
+	<target name="run" depends="build">
+		<java classname="parser.Main" fork='yes' failonerror="true">
+			<classpath refid="run.classpath" />
+			<arg value="test3.txt" />
 		</java>
 
-	  </target>
+	</target>
 
- 
+
 </project>

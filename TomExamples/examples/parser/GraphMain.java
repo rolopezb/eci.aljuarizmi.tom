@@ -1,5 +1,7 @@
 package parser;
 
+import java.io.ByteArrayInputStream;
+
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.tree.Tree;
@@ -9,7 +11,8 @@ public class GraphMain {
 
   public static void main(String[] args) {
     try {
-      GraphLexer lexer = new GraphLexer(new ANTLRInputStream(System.in));
+      String s = "<a:m|>\n"; // no se puede usar 'b' porque es reservado!!
+      GraphLexer lexer = new GraphLexer(new ANTLRInputStream(new ByteArrayInputStream(s.getBytes("UTF-8"))));
       CommonTokenStream tokens = new CommonTokenStream(lexer);
       GraphParser parser = new GraphParser(tokens);
       // Parse the input expression

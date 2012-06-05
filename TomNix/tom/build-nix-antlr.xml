@@ -12,7 +12,7 @@
 	<property name="gen" location="../src" />
 	<property name="build" location="build" />
 	<property name="bin" location="../bin" />
-	<property name="parser" value="lang" />
+	<property name="parser" value="nix" />
 
 
 	<path id="run.classpath">
@@ -28,6 +28,8 @@
 	<target name="refresh">
 		<eclipse.refreshLocal resource="TomNix/src" depth="infinite"/>
 		<echo message="TomNix/src Ambiente refrescado"></echo>
+		<eclipse.refreshLocal resource="TomNix/tom/src" depth="infinite"/>
+		<echo message="TomNix/tom/src Ambiente refrescado"></echo>
 	</target>
 
 	<target name="clean" description="Cleans gen and build directory">

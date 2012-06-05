@@ -1,0 +1,15 @@
+module Nix 
+imports int String
+abstract syntax
+
+ Exp = Var (Simb: String)
+	 | Mvar (Simb: String)
+	 | Con (Simb: String)
+	 | Fun (Name: String, Exp+) 
+	 | Quan (Operation: String, String+, Range:Exp, Expression: Exp) 
+	 | Subs (Expression: Exp Sust  -- Sustitucion. Exp[var1,var2:=exp1,exp2] 
+     | SetC [Simb] Exp Exp  -- comprension de conjuntos {x1,x2 | exp1 : exp2}
+	 | SetE [Exp]   -- conjuntos por extension.  {exp1,exp2,..}
+	 | Tup  [Exp]   --Tupla  [exp1,exp2,..]
+	 
+ 

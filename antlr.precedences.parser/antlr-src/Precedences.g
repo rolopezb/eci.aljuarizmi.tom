@@ -75,10 +75,21 @@ tokens{
 	ADD= '+'; // Suma
 	GT= '>'; // Mayor que
 	LEFTPAR = '(' ; 
-	RIGHTPAR = ' )';
+	RIGHTPAR = ')';
 	MINUS='-';
 	DIV='/';
 	POR='*';
+	COMMA=',';
+	LBRACK='[';
+	RBRACK=']';
+	LCURL='{';
+	RCURL='}';
+	COLONEQ=':=';
+	BAR='|';
+	COLON=':';
+	
+	Exp; Var; Simb; Mvar; Con; Fun; Quan; Subs; SetC; SetE; Tup; SubsOrTup; List;
+	Sust;
 	
 }
 
@@ -102,8 +113,8 @@ INT :	'0'..'9'+
     ;
 
 COMMENT
-    :   '//' ~('\n'|'\r')* '\r'? '\n' {$channel=HIDDEN;}
-    |   '/*' ( options {greedy=false;} : . )* '*/' {$channel=HIDDEN;}
+    :   '//' ~('\n'|'\r')* '\r'? '\n' {skip();}
+    |   '/*' ( options {greedy=false;} : . )* '*/' {skip();}
     ;
 
 WS  :   ( ' '

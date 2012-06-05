@@ -1,1 +1,1 @@
-\forall x \in \mathbb{R} \Rightarrow true 3^x
+\forall y \in \mathbb{R} \Rightarrow true 3^y

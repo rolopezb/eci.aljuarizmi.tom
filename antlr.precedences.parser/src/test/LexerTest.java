@@ -6,6 +6,8 @@ import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.Token;
 
 import prec.PrecedencesLexer;
+import prec.PrecedencesParser;
+import eci.antlr.tools.TokenUtil;
 
 public class LexerTest {
 
@@ -18,8 +20,9 @@ public class LexerTest {
 				PrecedencesLexer lexer = new PrecedencesLexer(new ANTLRInputStream(
 						new FileInputStream(args[0])));
 				Token tok = lexer.nextToken();
-				while (tok.getType()!=PrecedencesLexer.EOF) {
-					System.out.println(tok.getText()+">>"+tok.getType());
+				TokenUtil tkm = new TokenUtil(PrecedencesParser.tokenNames);
+				while (tok.getType()!=Token.EOF) {
+					System.out.println(tkm.tokDescription(tok));
 					tok = lexer.nextToken();
 				}
 
